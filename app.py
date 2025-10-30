@@ -4,7 +4,7 @@ import pandas as pd
 # =====================================
 # 1️⃣ Cargar la base resumen
 # =====================================
-ruta_resumen = '/content/drive/MyDrive/Parquet_Olap/Facturacion_Resumen.parquet'
+ruta_resumen = 'Facturacion_Resumen.parquet'
 resumen = pd.read_parquet(ruta_resumen)
 
 st.set_page_config(page_title="Consulta de Facturas", layout="wide")
