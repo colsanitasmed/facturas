@@ -68,10 +68,10 @@ with col1:
     )
 with col2:
     try:
-        logo = Image.open("logo_colsanitas.png")  # asegúrate que esté en la misma carpeta
+        logo = Image.open("Logo.png")  # asegúrate que esté en la misma carpeta
         st.image(logo, width=150)
     except Exception:
-        st.warning("⚠️ Logo no encontrado (logo_colsanitas.png).")
+        st.warning("⚠️ Logo no encontrado (Logo.png).")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -89,7 +89,7 @@ st.markdown(
 
 facturas_input = st.text_area(
     "Facturas", 
-    placeholder="Ejemplo:\nF001234\nF001235\nF001236", 
+    placeholder="Ejemplo:\CV001234\CV001235\CV001236", 
     height=150, 
     label_visibility="collapsed"
 )
