@@ -7,7 +7,7 @@ import os
 # ==============================
 @st.cache_data
 def cargar_resumen():
-    ruta = '/content/drive/MyDrive/Parquet_Olap/Facturacion_Resumen.parquet'
+    ruta = '/content/Facturacion_Resumen.parquet'
     if not os.path.exists(ruta):
         st.error(f"❌ No se encontró el archivo en la ruta: {ruta}")
         return pd.DataFrame()
