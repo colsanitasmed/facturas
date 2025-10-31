@@ -12,9 +12,39 @@ st.set_page_config(
 )
 
 # ======================================
+# ESTILOS PERSONALIZADOS (FONDO BLANCO)
+# ======================================
+st.markdown("""
+    <style>
+        .main {
+            background-color: white !important;
+        }
+        [data-testid="stAppViewContainer"] {
+            background-color: white !important;
+        }
+        [data-testid="stHeader"] {
+            background-color: white !important;
+        }
+        [data-testid="stSidebar"] {
+            background-color: white !important;
+        }
+        h1, h2, h3, p, label {
+            color: #0F3D6E !important;
+        }
+        .stButton>button {
+            background-color: #0F3D6E;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            height: 3em;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# ======================================
 # ENCABEZADO CON LOGO A LA DERECHA
 # ======================================
-col1, col2 = st.columns([4, 1])  # más espacio para el título
+col1, col2 = st.columns([4, 1])
 with col1:
     st.markdown(
         """
@@ -38,7 +68,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # ======================================
 st.markdown(
     """
-    <p style='color: #0F3D6E; font-size: 18px;'>
+    <p style='font-size: 18px;'>
         Ingresa una o varias facturas (una por línea o separadas por comas):
     </p>
     """,
