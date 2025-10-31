@@ -26,11 +26,14 @@ st.set_page_config(
 )
 
 # =============================
-# 3️⃣ Cabecera con logo
+# 3️⃣ Cabecera con logo opcional
 # =============================
 col1, col2 = st.columns([1, 5])
 with col1:
-    st.image("/content/Diapositiva1.PNG", width=80)  # logo de tu empresa
+    try:
+        st.image("Diapositiva1.PNG", width=80)  # logo de tu empresa
+    except Exception:
+        st.empty()  # si no encuentra la imagen, no falla
 with col2:
     st.markdown(
         "<h1 style='color:#2F4F4F;'>📦 Consulta de Facturas - Seguimiento</h1>",
