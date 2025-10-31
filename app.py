@@ -42,7 +42,7 @@ st.markdown("""
 st.markdown(
     """
     <div style="text-align: center;">
-        <img src="Logo.PNG" width="120" alt="Logo">
+        <img src="Logo.png" width="120" alt="Logo">
         <h1>📦 Consulta de Facturas</h1>
     </div>
     """,
