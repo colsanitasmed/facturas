@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import base64
 import os
 
 # =====================================
@@ -42,16 +43,25 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =====================================
-# 4️⃣ Cabecera con logo centrado (imagen embebida en bytes)
+# 4️⃣ Cabecera con logo centrado (base64 embebido)
 # =====================================
 logo_path = "Logo.PNG"
 if os.path.exists(logo_path):
     with open(logo_path, "rb") as f:
         logo_bytes = f.read()
-    st.image(logo_bytes, width=120)
+    logo_base64 = base64.b64encode(logo_bytes).decode()
+    st.markdown(
+        f"""
+        <div style="text-align: center;">
+            <img src="data:image/png;base64,{logo_base64}" width="120">
+            <h1>📦 Consulta de Facturas</h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 else:
     st.warning("❌ No se encontró el logo.")
-st.markdown("<h1>📦 Consulta de Facturas</h1>", unsafe_allow_html=True)
+
 st.markdown("---")
 
 # =====================================
