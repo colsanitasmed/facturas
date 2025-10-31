@@ -44,7 +44,7 @@ with col1:
     st.empty()
 with col2:
     try:
-        st.image("Diapositiva1.PNG", width=120)
+        st.image("Logo.PNG", width=120)
     except Exception:
         st.empty()
     st.markdown("<h1 style='text-align:center'>📦 Consulta de Facturas</h1>", unsafe_allow_html=True)
