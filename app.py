@@ -21,19 +21,18 @@ resumen = cargar_resumen()
 st.set_page_config(
     page_title="Consulta de Facturas",
     page_icon="📦",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 # =============================
-# 3️⃣ Cabecera con logo opcional
+# 3️⃣ Cabecera con logo
 # =============================
 col1, col2 = st.columns([1, 5])
 with col1:
     try:
-        st.image("Diapositiva1.PNG", width=80)  # logo de tu empresa
+        st.image("Diapositiva1.PNG", width=100)  # tu logo
     except Exception:
-        st.empty()  # si no encuentra la imagen, no falla
+        st.empty()  # si no se encuentra la imagen, no falla
 with col2:
     st.markdown(
         "<h1 style='color:#2F4F4F;'>📦 Consulta de Facturas - Seguimiento</h1>",
@@ -43,19 +42,7 @@ with col2:
 st.markdown("---")
 
 # =============================
-# 4️⃣ Sidebar opcional
-# =============================
-with st.sidebar:
-    st.header("⚙️ Opciones")
-    st.markdown("Este panel permite filtrar y buscar facturas fácilmente.")
-    st.markdown("Sube tu archivo `.parquet` si deseas reemplazar la base actual.")
-    archivo_subido = st.file_uploader("📂 Subir Facturacion_Resumen.parquet", type=["parquet"])
-    if archivo_subido is not None:
-        resumen = pd.read_parquet(archivo_subido)
-        st.success("✅ Base reemplazada correctamente.")
-
-# =============================
-# 5️⃣ Lógica de búsqueda
+# 4️⃣ Lógica de búsqueda
 # =============================
 if resumen is not None:
     st.success("✅ Base de datos cargada correctamente.")
