@@ -1,53 +1,61 @@
+# app.py
 import streamlit as st
-from PIL import Image
-import io
-import base64
 import pandas as pd
+from PIL import Image
+import os
 
-# ======================================
-# 1️⃣ Configuración de la página
-# ======================================
+# =====================================
+# Configuración de la página
+# =====================================
 st.set_page_config(
-    page_title="Mi App de Facturación",
-    page_icon=None,  # Puedes poner un emoji o dejar None
+    page_title="Consulta de Facturas",
+    page_icon="💊",
     layout="wide",
     initial_sidebar_state="collapsed"  # Oculta la barra lateral
 )
 
-# ======================================
-# 2️⃣ Código Base64 de tu logo
-# ======================================
-base64_image = "iVBORw0KGgoAAAANSUhEUgAAANYAAAClCAYAAAAgVQNBAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAA..."  # Pon aquí todo tu Base64
+# =====================================
+# Mostrar logo
+# =====================================
+logo_path = "logo.png"  # Debe estar en la misma carpeta que app.py
+if os.path.exists(logo_path):
+    logo = Image.open(logo_path)
+    st.image(logo, width=250)
+else:
+    st.warning("⚠️ Logo no encontrado en la carpeta de la app")
 
-# Convertir Base64 a imagen
-image_bytes = base64.b64decode(base64_image)
-logo = Image.open(io.BytesIO(image_bytes))
+st.title("💊 Consulta de Facturas")
 
-# Mostrar logo centrado
-st.image(logo, width=250)
-
-# ======================================
-# 3️⃣ Título o encabezado
-# ======================================
-st.title("Bienvenido a la App de Facturación")
-
-# ======================================
-# 4️⃣ Cargar datos
-# ======================================
-st.subheader("Carga tu archivo de datos")
-uploaded_file = st.file_uploader("Selecciona un archivo Excel o CSV", type=['xlsx','csv'])
+# =====================================
+# Cargar base de datos
+# =====================================
+st.subheader("📂 Cargar archivo de facturación")
+uploaded_file = st.file_uploader("Selecciona un archivo Parquet o Excel", type=["parquet", "xlsx"])
 
 if uploaded_file:
-    if uploaded_file.name.endswith('.xlsx'):
-        df = pd.read_excel(uploaded_file)
-    else:
-        df = pd.read_csv(uploaded_file)
-    
-    st.success("Archivo cargado correctamente ✅")
-    st.dataframe(df.head(20))  # Muestra primeras 20 filas
+    try:
+        if uploaded_file.name.endswith(".parquet"):
+            df = pd.read_parquet(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
 
-# ======================================
-# 5️⃣ Sección de análisis o filtros
-# ======================================
-st.subheader("Filtros y análisis")
-# Aquí puedes agregar tus filtros, gráficos, etc.
+        st.success("✅ Archivo cargado correctamente")
+        st.dataframe(df.head(10))  # Muestra las primeras 10 filas
+
+        # Ejemplo: filtrado por número de factura
+        factura = st.text_input("Buscar por número de factura:")
+        if factura:
+            df_filtrado = df[df["NUMERO FACTURA"].astype(str).str.contains(factura)]
+            st.write(f"Resultados para factura: {factura}")
+            st.dataframe(df_filtrado)
+
+    except Exception as e:
+        st.error(f"❌ Ocurrió un error al leer el archivo: {e}")
+else:
+    st.info("📌 Por favor, carga un archivo para empezar")
+
+# =====================================
+# Footer o información adicional
+# =====================================
+st.markdown("---")
+st.markdown("App creada por tu equipo de Analítica 💡")
