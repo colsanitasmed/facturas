@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 def cargar_resumen():
-    ruta = "/content/drive/MyDrive/Parquet_Olap/Facturacion_Resumen.parquet"
+    ruta = "ruta_resumen = 'Facturacion_Resumen.parquet"
     return pd.read_parquet(ruta)
 
 resumen = cargar_resumen()
