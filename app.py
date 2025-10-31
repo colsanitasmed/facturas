@@ -19,23 +19,33 @@ st.title("📦 Consulta de Facturas - Seguimiento")
 st.write("Pega los números de factura que deseas consultar (uno por línea o separados por comas):")
 
 # ==============================
-# 2️⃣ Cuadro de texto para ingresar facturas
+# 2️⃣ Cuadro de texto + botón de búsqueda
 # ==============================
 entrada = st.text_area("✏️ Ingresa los números de factura aquí:")
+buscar = st.button("🔍 Buscar facturas")
 
-if entrada.strip():
-    # Normalizar entrada (puede venir separada por comas, espacios o saltos de línea)
-    facturas_input = [x.strip() for x in entrada.replace(",", "\n").split("\n") if x.strip()]
+if buscar:
+    if not entrada.strip():
+        st.warning("⚠️ Debes ingresar al menos un número de factura.")
+    else:
+        # Normalizar entrada (puede venir separada por comas, espacios o saltos de línea)
+        facturas_input = [x.strip() for x in entrada.replace(",", "\n").split("\n") if x.strip()]
 
-    # Buscar facturas
-    resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas_input)]
+        if resumen.empty:
+            st.error("⚠️ No se pudo cargar la base de facturación.")
+        else:
+            # Buscar coincidencias
+            resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas_input)]
 
-    # Mostrar resultados
-    st.success(f"🔍 Se encontraron {len(resultado)} registros coincidentes.")
-    st.dataframe(resultado)
+            if len(resultado) > 0:
+                st.success(f"✅ Se encontraron {len(resultado)} registros coincidentes.")
+                st.dataframe(resultado)
 
-    # Botón para descarga
-    csv = resultado.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇️ Descargar resultados", csv, "Resultados_Facturas.csv", "text/csv")
+                # Botón para descarga
+                csv = resultado.to_csv(index=False).encode("utf-8")
+                st.download_button("⬇️ Descargar resultados", csv, "Resultados_Facturas.csv", "text/csv")
+            else:
+                st.info("🔎 No se encontraron coincidencias para las facturas ingresadas.")
 else:
-    st.info("📎 Esperando que ingreses los números de factura.")
+    st.info("📎 Esperando que ingreses los números de factura y presiones 'Buscar'.")
+
