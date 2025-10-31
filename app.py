@@ -8,26 +8,30 @@ from PIL import Image
 st.set_page_config(
     page_title="Consulta de Facturas - Medicamentos Colsanitas",
     page_icon="💊",
-    layout="centered"
+    layout="wide"
 )
 
 # ======================================
-# ENCABEZADO CON LOGO
+# ENCABEZADO CON LOGO A LA DERECHA
 # ======================================
-try:
-    logo = Image.open("Logo.png")  # asegúrate de que el archivo exista en la misma carpeta que app.py
-    st.image(logo, width=180)
-except Exception:
-    st.warning("⚠️ No se encontró el logo (Logo.png). Verifica el nombre y ubicación.")
+col1, col2 = st.columns([4, 1])  # más espacio para el título
+with col1:
+    st.markdown(
+        """
+        <h1 style='text-align: center; color: #0F3D6E; margin-top: 20px;'>
+            🔎 Consulta de Facturas - Medicamentos Colsanitas
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
+with col2:
+    try:
+        logo = Image.open("Logo.png")  # asegúrate que esté en la misma carpeta
+        st.image(logo, width=150)
+    except Exception:
+        st.warning("⚠️ Logo no encontrado (Logo.png).")
 
-st.markdown(
-    """
-    <h1 style='text-align: center; color: #0F3D6E;'>
-        🔎 Consulta de Facturas - Medicamentos Colsanitas
-    </h1>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # ======================================
 # CAMPO DE ENTRADA DE FACTURAS
@@ -43,7 +47,7 @@ st.markdown(
 
 facturas_input = st.text_area(
     "Facturas", 
-    placeholder="Ejemplo:\nF001234\nF001235\nF001236", 
+    placeholder="Ejemplo:\CV001234\CV001235\CV001236", 
     height=150, 
     label_visibility="collapsed"
 )
