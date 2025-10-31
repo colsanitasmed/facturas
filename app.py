@@ -7,7 +7,9 @@ import os
 # ==============================
 @st.cache_data
 def cargar_resumen():
-    ruta = '/content/Facturacion_Resumen.parquet'
+    # Usar ruta absoluta dentro del entorno Colab
+    ruta = os.path.abspath("/content/Facturacion_Resumen.parquet")
+    st.write(f"📁 Ruta detectada: {ruta}")  # Muestra la ruta en la app (solo para depurar)
     if not os.path.exists(ruta):
         st.error(f"❌ No se encontró el archivo en la ruta: {ruta}")
         return pd.DataFrame()
@@ -48,4 +50,3 @@ if buscar:
                 st.info("🔎 No se encontraron coincidencias para las facturas ingresadas.")
 else:
     st.info("📎 Esperando que ingreses los números de factura y presiones 'Buscar'.")
-
