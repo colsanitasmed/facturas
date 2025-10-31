@@ -39,17 +39,15 @@ st.markdown("""
 # =====================================
 # 4️⃣ Cabecera con logo centrado
 # =====================================
-col1, col2, col3 = st.columns([1, 3, 1])
-with col1:
-    st.empty()
-with col2:
-    try:
-        st.image("Logo.PNG", width=120)
-    except Exception:
-        st.empty()
-    st.markdown("<h1 style='text-align:center'>📦 Consulta de Facturas</h1>", unsafe_allow_html=True)
-with col3:
-    st.empty()
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="Logo.PNG" width="120" alt="Logo">
+        <h1>📦 Consulta de Facturas</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("---")
 
