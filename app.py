@@ -1,144 +1,87 @@
 import streamlit as st
 import pandas as pd
-from PIL import Image
-import os
 
-# ======================================
-# CONFIGURACIÓN GENERAL
-# ======================================
-st.set_page_config(
-    page_title="Consulta de Facturas - Medicamentos Colsanitas",
-    page_icon="💊",
-    layout="wide"
-)
+# =====================================
+# CONFIGURACIÓN INICIAL
+# =====================================
+st.set_page_config(page_title="Consulta de Facturas", layout="wide")
 
-# ======================================
-# ESTILOS PERSONALIZADOS (FONDO BLANCO)
-# ======================================
+# =====================================
+# LOGO Y TÍTULO
+# =====================================
+col1, col2 = st.columns([8, 1])
+with col1:
+    st.title("🔍 Consulta de Facturación")
+    st.markdown("App creada por tu equipo de **Medicamentos Colsanitas 💡**")
+with col2:
+    st.image("/content/Logo.png", width=120)
+
+# =====================================
+# ESTILO PERSONALIZADO
+# =====================================
 st.markdown("""
     <style>
-        .main {
+        /* Fondo blanco */
+        .stApp {
             background-color: white !important;
         }
-        [data-testid="stAppViewContainer"] {
-            background-color: white !important;
-        }
-        [data-testid="stHeader"], [data-testid="stSidebar"] {
-            background-color: white !important;
-        }
-        h1, h2, h3, p, label {
-            color: #0F3D6E !important;
-        }
-        .stButton>button {
-            background-color: #0F3D6E;
+
+        /* Botones personalizados */
+        div.stButton > button:first-child {
+            background-color: #7AB68E;
             color: white;
-            font-weight: bold;
+            border: none;
             border-radius: 8px;
-            height: 3em;
+            padding: 0.5em 1em;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        div.stButton > button:first-child:hover {
+            background-color: #6CA77F;
+            color: white;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# ======================================
-# CARGA DE BASE
-# ======================================
-@st.cache_data
-def cargar_resumen():
-    ruta = "Facturacion_Resumen.parquet"
-    if os.path.exists(ruta):
-        return pd.read_parquet(ruta)
-    else:
-        st.error(f"❌ No se encontró el archivo '{ruta}'.")
-        return None
+# =====================================
+# CARGA DE DATOS
+# =====================================
+ruta_resumen = '/content/drive/MyDrive/Parquet_Olap/Facturacion_Resumen.parquet'
+resumen = pd.read_parquet(ruta_resumen)
 
-resumen = cargar_resumen()
+# =====================================
+# ENTRADA DE FACTURAS
+# =====================================
+st.markdown("### 🔢 Ingrese uno o varios números de factura (separados por coma o salto de línea):")
+input_facturas = st.text_area("", placeholder="Ejemplo: 12345, 67890, 112233")
 
-# ======================================
-# ENCABEZADO CON LOGO A LA DERECHA
-# ======================================
-col1, col2 = st.columns([4, 1])
-with col1:
-    st.markdown(
-        """
-        <h1 style='text-align: center; color: #0F3D6E; margin-top: 20px;'>
-            🔎 Consulta de Facturas - Medicamentos Colsanitas
-        </h1>
-        """,
-        unsafe_allow_html=True
-    )
-with col2:
-    try:
-        logo = Image.open("Logo.png")  # asegúrate que esté en la misma carpeta
-        st.image(logo, width=150)
-    except Exception:
-        st.warning("⚠️ Logo no encontrado (Logo.png).")
-
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# ======================================
-# CAMPO DE ENTRADA DE FACTURAS
-# ======================================
-st.markdown(
-    """
-    <p style='font-size: 18px;'>
-        Ingresa una o varias facturas (una por línea o separadas por comas):
-    </p>
-    """,
-    unsafe_allow_html=True
-)
-
-facturas_input = st.text_area(
-    "Facturas", 
-    placeholder="Ejemplo:\CV001234\CV001235\CV001236", 
-    height=150, 
-    label_visibility="collapsed"
-)
-
-# ======================================
+# =====================================
 # BOTÓN DE BÚSQUEDA
-# ======================================
-buscar = st.button("🔍 Buscar Facturas", use_container_width=True)
+# =====================================
+buscar = st.button("Buscar Factura")
 
+# =====================================
+# PROCESO DE BÚSQUEDA
+# =====================================
 if buscar:
-    if resumen is None:
-        st.error("❌ No hay base de datos cargada.")
-    elif facturas_input.strip() == "":
-        st.warning("⚠️ Por favor ingresa al menos un número de factura.")
-    else:
-        facturas = [
-            f.strip()
-            for f in facturas_input.replace(",", "\n").split("\n")
-            if f.strip() != ""
-        ]
-        
-        resultado = resumen[
-            resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas)
-        ]
+    facturas = [x.strip() for x in input_facturas.replace("\n", ",").split(",") if x.strip()]
+    if facturas:
+        resultados = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas)]
+        if not resultados.empty:
+            st.success(f"✅ Se encontraron {len(resultados)} registros.")
+            st.dataframe(resultados)
 
-        if resultado.empty:
-            st.warning("⚠️ No se encontraron coincidencias.")
-        else:
-            st.success(f"✅ Se encontraron {len(resultado)} registros.")
-            st.dataframe(resultado, use_container_width=True)
-
-            # Botón de descarga CSV
-            csv = resultado.to_csv(index=False).encode("utf-8")
+            # Botón de descarga
+            csv = resultados.to_csv(index=False).encode("utf-8")
             st.download_button(
-                label="⬇️ Descargar resultados en CSV",
+                label="⬇️ Descargar Resultados en CSV",
                 data=csv,
-                file_name="resultado_facturas.csv",
+                file_name="Facturas_Encontradas.csv",
                 mime="text/csv",
+                key="descarga",
             )
-
-# ======================================
-# PIE DE PÁGINA
-# ======================================
-st.markdown(
-    """
-    <hr>
-    <p style='text-align: center; color: gray;'>
-        App creada por tu equipo de <b>Medicamentos Colsanitas 💡</b>
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+        else:
+            st.warning("⚠️ No se encontraron facturas con esos números.")
+    else:
+        st.error("Por favor ingresa al menos un número de factura.")
