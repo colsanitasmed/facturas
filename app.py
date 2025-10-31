@@ -30,25 +30,22 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main {background-color: #f5f5f5; padding: 20px;}
-    h1 {color: #1f4e79; font-weight: bold; font-size: 36px; }
+    h1 {color: #1f4e79; font-weight: bold; font-size: 36px; text-align: center;}
     .stButton>button {background-color: #1f4e79; color: white; font-weight: bold;}
-    .stTextArea textarea {background-color: #ffffff; border: 2px solid #1f4e79; border-radius: 10px;}
+    .stTextArea textarea {
+        background-color: #ffffff; 
+        border: 2px solid #1f4e79; 
+        border-radius: 10px; 
+        color: #0F3D6E;  /* color del texto */
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # =====================================
 # 4️⃣ Cabecera con logo centrado
 # =====================================
-st.markdown(
-    """
-    <div style="text-align: center;">
-        <img src="Logo.png" width="120" alt="Logo">
-        <h1>📦 Consulta de Facturas</h1>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
+st.image("Logo.PNG", width=120)  # carga la imagen local
+st.markdown("<h1>📦 Consulta de Facturas</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
 # =====================================
