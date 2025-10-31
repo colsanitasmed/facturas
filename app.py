@@ -2,51 +2,40 @@ import streamlit as st
 import pandas as pd
 import os
 
+# ==============================
+# 1️⃣ Cargar base de facturación
+# ==============================
 @st.cache_data
 def cargar_resumen():
-    try:
-        base_dir = os.path.dirname(__file__)
-    except NameError:
-        base_dir = os.getcwd()
-
-    ruta = os.path.join(base_dir, "Facturacion_Resumen.parquet")
-
+    ruta = '/content/drive/MyDrive/Parquet_Olap/Facturacion_Resumen.parquet'
     if not os.path.exists(ruta):
-        st.error(f"❌ No se encontró el archivo en: {ruta}")
-        st.stop()
-
+        st.error(f"❌ No se encontró el archivo en la ruta: {ruta}")
+        return pd.DataFrame()
     return pd.read_parquet(ruta)
 
 resumen = cargar_resumen()
 
 st.title("📦 Consulta de Facturas - Seguimiento")
-st.write("Sube tu archivo Excel o CSV con los números de factura a consultar:")
+st.write("Pega los números de factura que deseas consultar (uno por línea o separados por comas):")
 
-archivo = st.file_uploader("📤 Selecciona tu archivo", type=["xlsx", "csv"])
+# ==============================
+# 2️⃣ Cuadro de texto para ingresar facturas
+# ==============================
+entrada = st.text_area("✏️ Ingresa los números de factura aquí:")
 
-if archivo is not None:
-    try:
-        if archivo.name.endswith(".xlsx"):
-            facturas = pd.read_excel(archivo)
-        else:
-            facturas = pd.read_csv(archivo)
-        
-        facturas.columns = [c.strip().upper() for c in facturas.columns]
+if entrada.strip():
+    # Normalizar entrada (puede venir separada por comas, espacios o saltos de línea)
+    facturas_input = [x.strip() for x in entrada.replace(",", "\n").split("\n") if x.strip()]
 
-        if "NUMERO FACTURA NOTA" not in facturas.columns:
-            st.error("❌ El archivo debe tener una columna llamada 'NUMERO FACTURA NOTA'")
-        else:
-            lista_facturas = facturas["NUMERO FACTURA NOTA"].astype(str).unique().tolist()
-            resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(lista_facturas)]
+    # Buscar facturas
+    resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas_input)]
 
-            st.success(f"🔍 Se encontraron {len(resultado)} registros coincidentes.")
-            st.dataframe(resultado, use_container_width=True)
+    # Mostrar resultados
+    st.success(f"🔍 Se encontraron {len(resultado)} registros coincidentes.")
+    st.dataframe(resultado)
 
-            csv = resultado.to_csv(index=False).encode("utf-8")
-            st.download_button("⬇️ Descargar resultados", csv, "Resultados_Facturas.csv", "text/csv")
-
-    except Exception as e:
-        st.error(f"⚠️ Error al procesar el archivo: {e}")
-
+    # Botón para descarga
+    csv = resultado.to_csv(index=False).encode("utf-8")
+    st.download_button("⬇️ Descargar resultados", csv, "Resultados_Facturas.csv", "text/csv")
 else:
-    st.info("📎 Esperando que subas tu archivo con las facturas.")
+    st.info("📎 Esperando que ingreses los números de factura.")
