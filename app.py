@@ -43,24 +43,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =====================================
-# 4️⃣ Cabecera con logo centrado (base64 embebido)
+# 4️⃣ Cabecera con logo embebido (base64)
 # =====================================
-logo_path = "Logo.PNG"
-if os.path.exists(logo_path):
-    with open(logo_path, "rb") as f:
-        logo_bytes = f.read()
-    logo_base64 = base64.b64encode(logo_bytes).decode()
-    st.markdown(
-        f"""
-        <div style="text-align: center;">
-            <img src="data:image/png;base64,{logo_base64}" width="120">
-            <h1>📦 Consulta de Facturas</h1>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-else:
-    st.warning("❌ No se encontró el logo.")
+# 🔹 Base64 de tu Logo.PNG
+logo_base64 = """
+iVBORw0KGgoAAAANSUhEUgAA... (aquí va TODO el contenido base64 de tu PNG)
+"""  # reemplaza con tu base64 completo
+
+st.markdown(
+    f"""
+    <div style="text-align:center;">
+        <img src="data:image/png;base64,{logo_base64}" width="120">
+        <h1>📦 Consulta de Facturas</h1>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("---")
 
