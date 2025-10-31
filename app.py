@@ -1,52 +1,60 @@
+
 import streamlit as st
 import pandas as pd
 import os
 
-# ==============================
-# 1️⃣ Cargar base de facturación
-# ==============================
-@st.cache_data
+# =====================================
+# 1️⃣ Cargar la base resumen
+# =====================================
 def cargar_resumen():
-    # Usar ruta absoluta dentro del entorno Colab
-    ruta = os.path.abspath("/content/Facturacion_Resumen.parquet")
-    st.write(f"📁 Ruta detectada: {ruta}")  # Muestra la ruta en la app (solo para depurar)
-    if not os.path.exists(ruta):
-        st.error(f"❌ No se encontró el archivo en la ruta: {ruta}")
-        return pd.DataFrame()
-    return pd.read_parquet(ruta)
+    ruta = "Facturacion_Resumen.parquet"  # archivo dentro del repo
+    if os.path.exists(ruta):
+        return pd.read_parquet(ruta)
+    else:
+        st.error(f"❌ No se encontró el archivo '{ruta}'. Asegúrate de subirlo al mismo repo que app.py.")
+        return None
 
 resumen = cargar_resumen()
 
+# =====================================
+# 2️⃣ Configuración de la interfaz
+# =====================================
+st.set_page_config(page_title="Consulta de Facturas", page_icon="📦", layout="wide")
 st.title("📦 Consulta de Facturas - Seguimiento")
-st.write("Pega los números de factura que deseas consultar (uno por línea o separados por comas):")
 
-# ==============================
-# 2️⃣ Cuadro de texto + botón de búsqueda
-# ==============================
-entrada = st.text_area("✏️ Ingresa los números de factura aquí:")
-buscar = st.button("🔍 Buscar facturas")
+if resumen is not None:
+    st.success("✅ Base de datos cargada correctamente.")
 
-if buscar:
-    if not entrada.strip():
-        st.warning("⚠️ Debes ingresar al menos un número de factura.")
-    else:
-        # Normalizar entrada (puede venir separada por comas, espacios o saltos de línea)
-        facturas_input = [x.strip() for x in entrada.replace(",", "\n").split("\n") if x.strip()]
+    # Cuadro de texto para pegar facturas
+    facturas_input = st.text_area(
+        "✏️ Ingresa uno o varios números de factura (separados por coma, salto de línea o espacio):"
+    )
 
-        if resumen.empty:
-            st.error("⚠️ No se pudo cargar la base de facturación.")
+    # Botón de búsqueda
+    if st.button("🔍 Consultar Facturas"):
+        if facturas_input.strip() == "":
+            st.warning("⚠️ Por favor ingresa al menos un número de factura.")
         else:
-            # Buscar coincidencias
-            resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas_input)]
+            facturas = [
+                f.strip()
+                for f in facturas_input.replace(",", "\n").replace(" ", "\n").split("\n")
+                if f.strip() != ""
+            ]
+            resultado = resumen[resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas)]
 
-            if len(resultado) > 0:
-                st.success(f"✅ Se encontraron {len(resultado)} registros coincidentes.")
+            if resultado.empty:
+                st.warning("⚠️ No se encontraron coincidencias para las facturas ingresadas.")
+            else:
+                st.success(f"✅ Se encontraron {len(resultado)} registros.")
                 st.dataframe(resultado)
 
-                # Botón para descarga
                 csv = resultado.to_csv(index=False).encode("utf-8")
-                st.download_button("⬇️ Descargar resultados", csv, "Resultados_Facturas.csv", "text/csv")
-            else:
-                st.info("🔎 No se encontraron coincidencias para las facturas ingresadas.")
+                st.download_button(
+                    label="⬇️ Descargar resultados en CSV",
+                    data=csv,
+                    file_name="resultado_facturas.csv",
+                    mime="text/csv",
+                )
+
 else:
-    st.info("📎 Esperando que ingreses los números de factura y presiones 'Buscar'.")
+    st.stop()
