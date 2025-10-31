@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
+import os
 
 # ======================================
 # CONFIGURACIÓN GENERAL
@@ -22,10 +23,7 @@ st.markdown("""
         [data-testid="stAppViewContainer"] {
             background-color: white !important;
         }
-        [data-testid="stHeader"] {
-            background-color: white !important;
-        }
-        [data-testid="stSidebar"] {
+        [data-testid="stHeader"], [data-testid="stSidebar"] {
             background-color: white !important;
         }
         h1, h2, h3, p, label {
@@ -42,6 +40,20 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================================
+# CARGA DE BASE
+# ======================================
+@st.cache_data
+def cargar_resumen():
+    ruta = "Facturacion_Resumen.parquet"
+    if os.path.exists(ruta):
+        return pd.read_parquet(ruta)
+    else:
+        st.error(f"❌ No se encontró el archivo '{ruta}'.")
+        return None
+
+resumen = cargar_resumen()
+
+# ======================================
 # ENCABEZADO CON LOGO A LA DERECHA
 # ======================================
 col1, col2 = st.columns([4, 1])
@@ -56,10 +68,10 @@ with col1:
     )
 with col2:
     try:
-        logo = Image.open("Logo.png")  # asegúrate que esté en la misma carpeta
+        logo = Image.open("logo_colsanitas.png")  # asegúrate que esté en la misma carpeta
         st.image(logo, width=150)
     except Exception:
-        st.warning("⚠️ Logo no encontrado (Logo.png).")
+        st.warning("⚠️ Logo no encontrado (logo_colsanitas.png).")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -77,7 +89,7 @@ st.markdown(
 
 facturas_input = st.text_area(
     "Facturas", 
-    placeholder="Ejemplo:\CV001234\CV001235\CV001236", 
+    placeholder="Ejemplo:\nF001234\nF001235\nF001236", 
     height=150, 
     label_visibility="collapsed"
 )
@@ -88,12 +100,35 @@ facturas_input = st.text_area(
 buscar = st.button("🔍 Buscar Facturas", use_container_width=True)
 
 if buscar:
-    if facturas_input.strip() == "":
+    if resumen is None:
+        st.error("❌ No hay base de datos cargada.")
+    elif facturas_input.strip() == "":
         st.warning("⚠️ Por favor ingresa al menos un número de factura.")
     else:
-        facturas = [f.strip() for f in facturas_input.replace(",", "\n").split("\n") if f.strip()]
-        st.success(f"Se recibieron **{len(facturas)}** facturas para búsqueda:")
-        st.dataframe(pd.DataFrame(facturas, columns=["NÚMERO FACTURA"]))
+        facturas = [
+            f.strip()
+            for f in facturas_input.replace(",", "\n").split("\n")
+            if f.strip() != ""
+        ]
+        
+        resultado = resumen[
+            resumen["NUMERO FACTURA NOTA"].astype(str).isin(facturas)
+        ]
+
+        if resultado.empty:
+            st.warning("⚠️ No se encontraron coincidencias.")
+        else:
+            st.success(f"✅ Se encontraron {len(resultado)} registros.")
+            st.dataframe(resultado, use_container_width=True)
+
+            # Botón de descarga CSV
+            csv = resultado.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="⬇️ Descargar resultados en CSV",
+                data=csv,
+                file_name="resultado_facturas.csv",
+                mime="text/csv",
+            )
 
 # ======================================
 # PIE DE PÁGINA
