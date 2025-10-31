@@ -15,10 +15,10 @@ st.set_page_config(
 # ENCABEZADO CON LOGO
 # ======================================
 try:
-    logo = Image.open("logo_colsanitas.png")  # debe estar en la misma carpeta que app.py
+    logo = Image.open("Logo.png")  # asegúrate de que el archivo exista en la misma carpeta que app.py
     st.image(logo, width=180)
-except Exception as e:
-    st.warning("⚠️ No se encontró el logo (logo_colsanitas.png). Verifica el nombre y ubicación.")
+except Exception:
+    st.warning("⚠️ No se encontró el logo (Logo.png). Verifica el nombre y ubicación.")
 
 st.markdown(
     """
@@ -65,3 +65,11 @@ if buscar:
 # PIE DE PÁGINA
 # ======================================
 st.markdown(
+    """
+    <hr>
+    <p style='text-align: center; color: gray;'>
+        App creada por tu equipo de <b>Medicamentos Colsanitas 💡</b>
+    </p>
+    """,
+    unsafe_allow_html=True
+)
