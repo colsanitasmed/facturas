@@ -30,7 +30,7 @@ st.set_page_config(
 # =============================
 col1, col2 = st.columns([1, 5])
 with col1:
-    st.image("C:\Users\MiltonYohanyCruzCarv\Documents\Medicamentos\Plantillas Cubo\App.png", width=80)  # logo de tu empresa
+    st.image("/content/Diapositiva1.PNG", width=80)  # logo de tu empresa
 with col2:
     st.markdown(
         "<h1 style='color:#2F4F4F;'>📦 Consulta de Facturas - Seguimiento</h1>",
