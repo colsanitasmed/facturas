@@ -1,4 +1,8 @@
 import streamlit as st
+# 🚿 Limpiar caché de datos y recursos al iniciar
+st.cache_data.clear()
+st.cache_resource.clear()
+st.toast("Caché limpiado correctamente ✅")
 import pandas as pd
 from PIL import Image
 import os
