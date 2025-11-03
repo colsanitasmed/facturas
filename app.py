@@ -46,7 +46,7 @@ st.markdown("""
 # ======================================
 # CARGA DE BASE
 # ======================================
-@st.cache_data
+#@st.cache_data
 def cargar_resumen():
     ruta = "Facturacion_Resumen.parquet"
     if os.path.exists(ruta):
