@@ -48,7 +48,7 @@ st.markdown("""
 # ======================================
 @st.cache_data
 def cargar_resumen():
-    ruta = "Facturacion_ResumenN.parquet"
+    ruta = "Facturacion_Resumen.parquet"
     if os.path.exists(ruta):
         return pd.read_parquet(ruta)
     else:
